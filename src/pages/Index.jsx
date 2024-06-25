@@ -19,14 +19,46 @@ const Index = () => {
 
           mediaRecorder.ondataavailable = (event) => {
             const audioBlob = event.data;
-            // Pass the audioBlob to the ACRCloud SDK for processing
-            console.log('Audio Blob:', audioBlob);
+            // Pass the audioBlob to the ACRCloud API for processing
+            processAudioWithACRCloud(audioBlob);
           };
         })
         .catch((err) => {
           console.error('Error accessing microphone', err);
         });
     }
+  };
+
+  const processAudioWithACRCloud = (audioBlob) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Audio = reader.result.split(',')[1];
+      const data = {
+        sample: base64Audio,
+        access_key: 'YOUR_ACRCLOUD_ACCESS_KEY',
+        data_type: 'audio',
+        signature_version: '1',
+        sample_bytes: audioBlob.size
+      };
+
+      const formBody = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])).join('&');
+
+      fetch('https://identify-eu-west-1.acrcloud.com/v1/identify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formBody
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('ACRCloud Result:', result);
+      })
+      .catch(error => {
+        console.error('ACRCloud Error:', error);
+      });
+    };
+    reader.readAsDataURL(audioBlob);
   };
 
   useEffect(() => {
