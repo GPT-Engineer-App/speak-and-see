@@ -1,17 +1,33 @@
-// Update this page (the content is just a fallback if you fail and example)
-// Use chakra-ui
-import { Container, Text, VStack } from "@chakra-ui/react";
-
-// Example of using react-icons
-// import { FaRocket } from "react-icons/fa";
-// <IconButton aria-label="Add" icon={<FaRocket />} size="lg" />; // IconButton would also have to be imported from chakra
+import React, { useEffect } from 'react';
+import { Container, Text, VStack, Button } from "@chakra-ui/react";
 
 const Index = () => {
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+      .then((stream) => {
+        console.log('Permissions granted');
+        // Do something with the stream
+      })
+      .catch((err) => {
+        console.error('Permissions denied', err);
+      });
+  }, []);
+
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <VStack spacing={4}>
-        <Text fontSize="2xl">Your Blank Canvas</Text>
-        <Text>Chat with the agent to start making edits.</Text>
+        <Text fontSize="2xl">Microphone and Video Permission Extension</Text>
+        <Text>This extension requests permissions to use the microphone and video.</Text>
+        <Button onClick={() => {
+          navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+            .then((stream) => {
+              console.log('Permissions granted');
+              // Do something with the stream
+            })
+            .catch((err) => {
+              console.error('Permissions denied', err);
+            });
+        }}>Request Permissions</Button>
       </VStack>
     </Container>
   );
